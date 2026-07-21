@@ -3,30 +3,33 @@ services:
     name: whatsapp-suite-backend
     env: node
     plan: free
-    buildCommand: cd backend && npm install && cd ../frontend && npm install && npm run build
-    startCommand: cd backend && NODE_ENV=production node server.js
+
+    buildCommand: |
+      cd backend
+      npm install
+      cd ../frontend
+      npm install
+      npm run build
+
+    startCommand: |
+      cd backend
+      node server.js
+
     envVars:
       - key: NODE_ENV
         value: production
-      - key: CLIENT_URL
-        value: https://whatsapp-suite-backend.onrender.com
+
       - key: PORT
         value: 10000
+
+      - key: CLIENT_URL
+        sync: false
+
+      - key: MONGO_URI
+        sync: false
+
       - key: JWT_SECRET
         generateValue: true
+
       - key: JWT_REFRESH_SECRET
         generateValue: true
-      - key: MONGO_URI
-        fromDatabase:
-          name: whatsapp-suite-db
-    disk:
-      name: whatsapp-sessions
-      mountPath: /opt/render/project/src/backend/sessions
-      sizeGB: 1
-
-databases:
-  - name: whatsapp-suite-db
-    plan: free
-    databaseName: whatsapp_suite
-    user: admin
-```
