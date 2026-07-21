@@ -1,3 +1,4 @@
+
 services:
   - type: web
     name: whatsapp-suite-backend
@@ -5,11 +6,15 @@ services:
     plan: free
     buildCommand: cd backend && npm install && cd ../frontend && npm install && npm run build
     startCommand: cd backend && NODE_ENV=production node server.js
+    healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
       - key: CLIENT_URL
-        value: https://your-frontend.onrender.com
+        fromService:
+          type: web
+          name: whatsapp-suite-backend
+          property: url
       - key: PORT
         value: 10000
       - key: JWT_SECRET
@@ -18,3 +23,5 @@ services:
         generateValue: true
       - key: MONGO_URI
         sync: false
+      - key: DOCKER_DEFAULT_PLATFORM
+        value: linux/amd64

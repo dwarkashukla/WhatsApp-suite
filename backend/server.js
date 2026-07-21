@@ -1,4 +1,6 @@
-require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
+// Load .env if it exists (for local dev); Render injects env vars natively
+const dotenvPath = require('path').join(__dirname, '../.env');
+try { require('fs').accessSync(dotenvPath); require('dotenv').config({ path: dotenvPath }); } catch (_) {}
 
 const express = require('express');
 const http = require('http');
