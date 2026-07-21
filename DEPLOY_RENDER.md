@@ -1,12 +1,14 @@
 # Deploy to Render.com
 
+This guide walks you through deploying WhatsApp Suite using Render Blueprint + MongoDB Atlas.
+
 ## Prerequisites
+
 - GitHub account
-- MongoDB database (MongoDB Atlas recommended: https://www.mongodb.com/atlas/database)
+- MongoDB Atlas account (free tier): https://www.mongodb.com/atlas/database
 
-## Steps
+## Step 1 — Push code to GitHub
 
-### 1. Push code to GitHub
 ```bash
 git init
 git add .
@@ -15,44 +17,69 @@ git remote add origin https://github.com/YOUR_USERNAME/whatsapp-suite.git
 git push -u origin main
 ```
 
-### 2. Create Render Account
-- Go to https://render.com
-- Sign up with GitHub
+## Step 2 — Create Render Account
 
-### 3. Deploy Backend
-1. Click "New" → "Blueprint"
+1. Go to https://render.com
+2. Sign up using your GitHub account
+
+## Step 3 — Create MongoDB Atlas Database
+
+1. Go to https://www.mongodb.com/atlas/database and sign up (free tier available)
+2. Deploy a **Shared (M0)** cluster — it's free
+3. Once the cluster is created, go to **Security → Database Access**
+   - Click **Add New Database User**
+   - Choose **Password** authentication
+   - Set a username and password (save these securely)
+   - Click **Add User**
+4. Go to **Security → Network Access**
+   - Click **Add IP Address**
+   - Enter `0.0.0.0/0` (allows Render to connect)
+   - Click **Confirm**
+5. Click **Connect** → **Drivers**
+   - Copy the connection string, which looks like:
+     ```
+     mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/whatsapp_suite?retryWrites=true&w=majority
+     ```
+   - Replace `<username>` and `<password>` with the credentials from step 3
+
+## Step 4 — Deploy with Render Blueprint
+
+1. In Render dashboard, click **New → Blueprint**
 2. Connect your GitHub repository
-3. Select the `render.yaml` file
-4. Click "Apply"
+3. Render will detect the `render.yaml` file
+4. Click **Apply**
+5. The first deploy will fail — **this is expected** because `MONGO_URI` is not yet set
 
-### 4. Create MongoDB Database (if not using Atlas)
-- In Render dashboard: "New" → "MongoDB"
-- Or use MongoDB Atlas (recommended for production)
+## Step 5 — Set Environment Variables
 
-### 5. Update Environment Variables
-After deployment, in Render dashboard:
-- Go to your service → "Environment"
-- Add these variables:
-  - `MONGO_URI`: Your MongoDB connection string
-  - `JWT_SECRET`: A secure random string (generate with: `openssl rand -hex 32`)
-  - `JWT_REFRESH_SECRET`: Another secure random string
-  - `REDIS_HOST` (optional): Leave empty if not using
-  - `REDIS_PORT` (optional): Leave empty if not using
+1. In Render dashboard, go to your **whatsapp-suite-backend** service
+2. Click the **Environment** tab
+3. Add the following variables manually:
 
-### 6. Deploy Frontend
-Option A: Already included in render.yaml (served by backend)
-Option B: Separate deployment
-- "New" → "Static Site"
-- Build command: `cd frontend && npm install && npm run build`
-- Publish directory: `frontend/dist`
-- Add environment variable: `VITE_API_URL=https://your-backend.onrender.com`
+| Variable | Value |
+|---|---|
+| `MONGO_URI` | Your MongoDB Atlas connection string from Step 3 |
+| `JWT_SECRET` | Run `openssl rand -hex 32` (or any secure random string) |
+| `JWT_REFRESH_SECRET` | Run `openssl rand -hex 32` (use a different string) |
+| `REDIS_HOST` | *(optional)* Leave empty if not using Redis |
+| `REDIS_PORT` | *(optional)* Leave empty if not using Redis |
 
-## Access Your Application
-- Frontend: https://whatsapp-suite-backend.onrender.com
-- API: https://whatsapp-suite-backend.onrender.com/api
+4. Click **Save Changes**
+5. Render will automatically redeploy the service with the new environment variables
+
+## Step 6 — Verify Deployment
+
+Once the deploy succeeds:
+
+- **Backend API**: `https://whatsapp-suite-backend.onrender.com/api`
+- **Frontend**: `https://whatsapp-suite-backend.onrender.com`
+- **Health check**: `https://whatsapp-suite-backend.onrender.com/api/health`
+
+If you want a custom frontend URL, update `CLIENT_URL` in the Render dashboard Environment tab to your custom domain.
 
 ## Notes
-- Free tier sleeps after 15 minutes of inactivity
-- First request after sleep takes ~30 seconds to wake up
-- Sessions are persisted in Render disk (1GB)
-- For production, upgrade to paid plan ($7/month)
+
+- Render's free tier sleeps after 15 minutes of inactivity
+- The first request after sleep takes ~30 seconds to wake up
+- WhatsApp session data is persisted on a 1GB Render disk at `/opt/render/project/src/backend/sessions`
+- For production workloads, upgrade to a paid plan ($7/month)

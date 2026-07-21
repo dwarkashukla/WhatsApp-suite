@@ -9,7 +9,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: CLIENT_URL
-        value: https://whatsapp-suite-backend.onrender.com
+        value: https://your-frontend.onrender.com
       - key: PORT
         value: 10000
       - key: JWT_SECRET
@@ -17,16 +17,9 @@ services:
       - key: JWT_REFRESH_SECRET
         generateValue: true
       - key: MONGO_URI
-        fromDatabase:
-          name: whatsapp-suite-db
+        sync: false
     disk:
       name: whatsapp-sessions
       mountPath: /opt/render/project/src/backend/sessions
       sizeGB: 1
-
-databases:
-  - name: whatsapp-suite-db
-    plan: free
-    databaseName: whatsapp_suite
-    user: admin
 ```
