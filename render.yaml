@@ -1,4 +1,3 @@
-
 services:
   - type: web
     name: whatsapp-suite-backend
@@ -10,18 +9,15 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      - key: CLIENT_URL
-        fromService:
-          type: web
-          name: whatsapp-suite-backend
-          property: url
       - key: PORT
         value: 10000
+      - key: CLIENT_URL
+        sync: false
+      - key: MONGO_URI
+        sync: false
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_REFRESH_SECRET
         generateValue: true
-      - key: MONGO_URI
-        sync: false
       - key: DOCKER_DEFAULT_PLATFORM
         value: linux/amd64
