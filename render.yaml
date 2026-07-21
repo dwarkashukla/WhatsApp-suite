@@ -18,7 +18,3 @@ services:
         generateValue: true
       - key: MONGO_URI
         sync: false
-    disk:
-      name: whatsapp-sessions
-      mountPath: /opt/render/project/src/backend/sessions
-      sizeGB: 1
