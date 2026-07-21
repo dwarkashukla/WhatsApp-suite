@@ -22,4 +22,3 @@ services:
       name: whatsapp-sessions
       mountPath: /opt/render/project/src/backend/sessions
       sizeGB: 1
-```
