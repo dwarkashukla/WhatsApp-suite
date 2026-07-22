@@ -8,7 +8,7 @@ services:
       cd backend
       npm ci
       cd ../frontend
-      npm ci
+      npm ci --include=dev
       npm run build
 
     startCommand: |
