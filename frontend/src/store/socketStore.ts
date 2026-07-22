@@ -16,7 +16,7 @@ export const useSocketStore = create<SocketState>()((set, get) => ({
   connect: (userId: string) => {
     if (get().socket?.connected) return
 
-    const socket = io('/', {
+    const socket = io(import.meta.env.VITE_API_URL || '/', {
       transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionAttempts: 5,

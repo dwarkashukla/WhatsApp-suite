@@ -1,9 +1,10 @@
 services:
+  # ─── Backend API ───────────────────────────────────────────────
   - type: web
     name: whatsapp-suite-backend
     env: node
     plan: free
-    buildCommand: cd backend && npm install && cd ../frontend && npm ci --include=dev && npm ls react react-dom @types/react @types/react-dom typescript && npm run build
+    buildCommand: cd backend && npm install
     startCommand: cd backend && NODE_ENV=production node server.js
     healthCheckPath: /api/health
     envVars:
@@ -21,3 +22,17 @@ services:
         generateValue: true
       - key: DOCKER_DEFAULT_PLATFORM
         value: linux/amd64
+
+  # ─── Frontend Static Site ──────────────────────────────────────
+  - type: static
+    name: whatsapp-suite-frontend
+    env: static
+    buildCommand: cd frontend && npm ci --include=dev && npm run build
+    staticPublishPath: ./frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

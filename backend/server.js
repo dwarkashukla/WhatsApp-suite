@@ -58,14 +58,6 @@ app.use('/api/stats', statsRoutes);
 // Static files (uploaded media)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Serve frontend in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../frontend/dist')));
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
-  });
-}
-
 // 404
 app.use('*', (req, res) => res.status(404).json({ success: false, message: 'Route not found' }));
 
