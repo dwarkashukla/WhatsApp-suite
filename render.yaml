@@ -3,7 +3,7 @@ services:
     name: whatsapp-suite-backend
     env: node
     plan: free
-    buildCommand: cd backend && npm install && cd ../frontend && rm -rf node_modules package-lock.json && npm install && npm run build
+    buildCommand: cd backend && npm install && cd ../frontend && npm ci && npm run build
     startCommand: cd backend && NODE_ENV=production node server.js
     healthCheckPath: /api/health
     envVars:
