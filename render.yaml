@@ -1,38 +1,37 @@
 services:
-  # ─── Backend API ───────────────────────────────────────────────
   - type: web
     name: whatsapp-suite-backend
     env: node
     plan: free
-    buildCommand: cd backend && npm install
-    startCommand: cd backend && NODE_ENV=production node server.js
+
+    buildCommand: |
+      cd backend
+      npm ci
+      cd ../frontend
+      npm ci
+      npm run build
+
+    startCommand: |
+      cd backend
+      node server.js
+
     healthCheckPath: /api/health
+
     envVars:
       - key: NODE_ENV
         value: production
+
       - key: PORT
         value: 10000
+
       - key: CLIENT_URL
         sync: false
+
       - key: MONGO_URI
         sync: false
+
       - key: JWT_SECRET
         generateValue: true
+
       - key: JWT_REFRESH_SECRET
         generateValue: true
-      - key: DOCKER_DEFAULT_PLATFORM
-        value: linux/amd64
-
-  # ─── Frontend Static Site ──────────────────────────────────────
-  - type: static
-    name: whatsapp-suite-frontend
-    env: static
-    buildCommand: cd frontend && npm ci --include=dev && npm run build
-    staticPublishPath: ./frontend/dist
-    envVars:
-      - key: VITE_API_URL
-        sync: false
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
