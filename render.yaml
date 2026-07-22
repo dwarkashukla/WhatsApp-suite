@@ -3,7 +3,7 @@ services:
     name: whatsapp-suite-backend
     env: node
     plan: free
-    buildCommand: cd backend && npm install && cd ../frontend && npm ci && npm ls react react-dom @types/react @types/react-dom typescript && npm run build
+    buildCommand: cd backend && npm install && cd ../frontend && npm ci --include=dev && npm ls react react-dom @types/react @types/react-dom typescript && npm run build
     startCommand: cd backend && NODE_ENV=production node server.js
     healthCheckPath: /api/health
     envVars:
